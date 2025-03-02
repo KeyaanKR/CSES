@@ -1,0 +1,11 @@
+# Ignore everything
+*
+
+# Allow directories to be processed
+!*/
+
+# Allow .cpp files in all directories
+!**/*.cpp
+
+# Ensure .gitignore is not ignored
+!.gitignore
