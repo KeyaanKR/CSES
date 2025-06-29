@@ -17,62 +17,56 @@ int main() {
   for (ll i = 0; i < n; i++)
     cin >> ranges[i].first >> ranges[i].second;
 
-  vector<pair<ll, ll>> r = ranges;
-  sort(r.begin(), r.end(), compare);
+  vector<pair<ll, ll>> temp = ranges;
+  sort(ranges.begin(), ranges.end(), compare);
 
-  for (auto [s, e] : r)
-    cout << s << " " << e << "\n";
-
+  multiset<pair<ll, ll>> r;
   map<pair<ll, ll>, ll> contains;
-  ll maxS = -1;
-  for (auto [s, e] : r) {
-    if (s <= maxS)
-      contains[{s, e}] = 1;
-    else {
-      contains[{s, e}] = 0;
-      maxS = s;
+  for (int i = 0; i < n; i++) {
+    if (i == 0) {
+      r.insert(ranges[i]);
+      contains[ranges[i]] = 0;
+    } else {
+      auto it = r.begin();
+      while (it != r.end()) {
+        if (it->first >= ranges[i].first) {
+          auto current = it++;
+          contains[ranges[i]] += 1 + contains[*current];
+          r.erase(current);
+        } else {
+          ++it;
+        }
+      }
+      r.insert(ranges[i]);
     }
   }
 
-  pair<ll, ll> r1 = r[0];
-  pair<ll, ll> r2 = r[1];
-
-  if (r1.second == r2.second && r1.first == r2.first)
-    contains[r1] = 1;
-
-  for (ll i = 0; i < n; i++) {
-    pair<ll, ll> range = ranges[i];
-    if (contains[range])
-      cout << "1 ";
-    else
-      cout << "0 ";
-  }
+  for (auto range : temp)
+    cout << contains[range] << " ";
   cout << "\n";
 
+  multiset<pair<ll, ll>> l;
   map<pair<ll, ll>, ll> contained;
-  int minS = INT_MAX;
   for (int i = n - 1; i >= 0; i--) {
-    int s = r[i].first;
-    if (s >= minS)
-      contained[r[i]] = 1;
-    else {
-      contained[r[i]] = 0;
-      minS = s;
+    if (i == n - 1) {
+      l.insert(ranges[i]);
+      contained[ranges[i]] = 0;
+    } else {
+      auto it = l.begin();
+      while (it != l.end()) {
+        if (it->first <= ranges[i].first) {
+          auto current = it++;
+          contained[ranges[i]] += 1 + contained[*current];
+        } else {
+          ++it;
+        }
+      }
+      if (!contained[ranges[i]])
+        l.insert(ranges[i]);
     }
   }
 
-  r1 = r[n - 1];
-  r2 = r[n - 2];
-
-  if (r1.second == r2.second && r1.first == r2.first)
-    contained[r1] = 1;
-
-  for (ll i = 0; i < n; i++) {
-    pair<ll, ll> range = ranges[i];
-    if (contained[range])
-      cout << "1 ";
-    else
-      cout << "0 ";
-  }
+  for (auto range : temp)
+    cout << contained[range] << " ";
   cout << "\n";
 }
